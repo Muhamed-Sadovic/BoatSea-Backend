@@ -20,7 +20,7 @@ namespace BoatSea.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Get() => Ok(_mapper.Map<List<UserDTO>>(await _userService.GetAllUsersAsync()));
+        public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<UserDTO>>(await _userService.GetAllUsersAsync()));
 
 
         [HttpDelete("{id}")]

@@ -8,7 +8,7 @@ namespace BoatSea.Models
         public string Name { get; set; }
         public string Type { get; set; }
         public float Price { get; set; }
-        public bool Available { get; set; }
+        public bool Available { get; set; } = true;
         public string Description { get; set; }
         public string Image { get; set; }
         public int? UserId { get; set; }

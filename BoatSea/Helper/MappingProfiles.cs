@@ -9,6 +9,10 @@ namespace BoatSea.Helper
         public MappingProfiles()
         {
             CreateMap<User,UserDTO>();
+            CreateMap<UserDTO,User>();
+
+            CreateMap<Boat,BoatDTO>();
+            CreateMap<BoatDTO,Boat>();
         }
     }
 }

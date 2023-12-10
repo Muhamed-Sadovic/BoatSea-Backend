@@ -6,6 +6,12 @@ namespace BoatSea.Interfaces
     {
         Task<List<Boat>> GetAllBoatsAsync();
         Task<Boat> GetByIdAsync(int id);
-        Task DeleteBoat(Boat boat);
+        Task CreateBoat(Boat boat);
+        Task UpdateBoatAsync(Boat boat);
+        Task DeleteBoatAsync(Boat boat);
+
+
+        Task<List<Boat>> GetByAvailable();
+        Task<List<Boat>> GetByType(string type);
     }
 }
