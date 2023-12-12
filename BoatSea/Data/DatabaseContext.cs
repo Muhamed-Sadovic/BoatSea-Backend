@@ -12,7 +12,7 @@ namespace BoatSea.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Boat> Boats { get; set; }
-        //public DbSet<Rent> Rents { get; set; }
+        public DbSet<Rent> Rents { get; set; }
 
     }
 }

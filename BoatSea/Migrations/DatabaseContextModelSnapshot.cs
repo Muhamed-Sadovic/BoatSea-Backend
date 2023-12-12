@@ -52,13 +52,7 @@ namespace BoatSea.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Boats");
                 });
@@ -72,6 +66,7 @@ namespace BoatSea.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("BoatId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DatumIznajmljivanja")
@@ -90,7 +85,7 @@ namespace BoatSea.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Rent");
+                    b.ToTable("Rents");
                 });
 
             modelBuilder.Entity("BoatSea.Models.User", b =>
@@ -113,27 +108,21 @@ namespace BoatSea.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BoatSea.Models.Boat", b =>
-                {
-                    b.HasOne("BoatSea.Models.User", "User")
-                        .WithMany("Boats")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BoatSea.Models.Rent", b =>
                 {
                     b.HasOne("BoatSea.Models.Boat", "Boat")
                         .WithMany("Rents")
-                        .HasForeignKey("BoatId");
+                        .HasForeignKey("BoatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BoatSea.Models.User", "User")
                         .WithMany("Rents")
@@ -153,8 +142,6 @@ namespace BoatSea.Migrations
 
             modelBuilder.Entity("BoatSea.Models.User", b =>
                 {
-                    b.Navigation("Boats");
-
                     b.Navigation("Rents");
                 });
 #pragma warning restore 612, 618
