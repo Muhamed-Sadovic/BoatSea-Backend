@@ -9,7 +9,7 @@ namespace BoatSea.Interfaces
         Task CreateBoat(Boat boat);
         Task UpdateBoatAsync(Boat boat);
         Task DeleteBoatAsync(Boat boat);
-        Task<List<Boat>> GetByAvailable();
+        Task<List<Boat>> GetByAvailable(); //da li su slobodni
         Task<List<Boat>> GetByType(string type);
     }
 }

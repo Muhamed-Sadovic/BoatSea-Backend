@@ -25,7 +25,7 @@ namespace BoatSea.Services
              await _databaseContext.SaveChangesAsync();
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             return await _databaseContext.Users.Where(p => p.Id == id).FirstOrDefaultAsync();
         }
