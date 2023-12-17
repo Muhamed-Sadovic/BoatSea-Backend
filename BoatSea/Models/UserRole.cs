@@ -1,8 +1,9 @@
 ﻿namespace BoatSea.Models
 {
-    public enum UserRole
+    public class UserRole
     {
-        User,
-        Admin
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int UserId { get; set; }
     }
 }

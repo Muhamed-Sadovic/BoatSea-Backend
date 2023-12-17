@@ -6,7 +6,7 @@
         public String Name { get; set; }
         public String Email { get; set; }
         public String Password { get; set; }
-        public UserRole Role { get; set; }
+        public List<UserRole> Roles { get; set; }
         public ICollection<Rent> Rents { get; set; }
 
 

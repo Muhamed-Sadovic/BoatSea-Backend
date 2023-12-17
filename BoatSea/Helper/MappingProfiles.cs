@@ -10,6 +10,7 @@ namespace BoatSea.Helper
         {
             CreateMap<User,UserDTO>();
             CreateMap<UserDTO,User>();
+            CreateMap<RegisterUserRequestDTO, User>();
 
             CreateMap<Boat,BoatDTO>();
             CreateMap<BoatDTO,Boat>();
