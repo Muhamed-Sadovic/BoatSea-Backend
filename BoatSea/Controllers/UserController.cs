@@ -3,6 +3,7 @@ using BoatSea.Data;
 using BoatSea.DTOs;
 using BoatSea.Interfaces;
 using BoatSea.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoatSea.Controllers
@@ -21,10 +22,12 @@ namespace BoatSea.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<UserDTO>>(await _userService.GetAllUsersAsync()));
+        /*[Authorize]*/ //samo autorizovani mogu da koriste ovu f-ju
+        public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<UserResponseDTO>>(await _userService.GetAllUsersAsync()));
 
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -36,7 +39,6 @@ namespace BoatSea.Controllers
             await _userService.DeleteUser(user);
             return NoContent();
         }
-
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequestDTO request)
@@ -54,18 +56,18 @@ namespace BoatSea.Controllers
 
             await _userService.RegisterUser(user);
 
-            await _userService.CreateRole(new UserRole
-            {
-                Name = "User",
-                UserId = user.Id
-            });
+            //await _userService.CreateRole(new UserRole
+            //{
+            //    Name = "User",
+            //    UserId = user.Id
+            //});
 
             var token = _userService.GenerateToken(user);
 
             return Ok(new AuthResponseDTO
             {
                 Token = token,
-                User = _mapper.Map<UserDTO>(user)
+                User = _mapper.Map<UserResponseDTO>(user)
             });
         }
 
@@ -91,7 +93,7 @@ namespace BoatSea.Controllers
             return Ok(new AuthResponseDTO
             {
                 Token = token,
-                User = _mapper.Map<UserDTO>(userExist)
+                User = _mapper.Map<UserResponseDTO>(userExist)
             });
         }
 

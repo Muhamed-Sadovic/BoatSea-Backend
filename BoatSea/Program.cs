@@ -49,6 +49,13 @@ builder.Services.AddAuthentication(options =>
         options.RequireHttpsMetadata = false;
     });
 
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +69,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("MyPolicy");
 
 app.MapControllers();
 

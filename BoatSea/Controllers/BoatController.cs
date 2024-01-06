@@ -17,6 +17,7 @@ namespace BoatSea.Controllers
             _boatService = boatService;
             _mapper = mapper;
         }
+
         [HttpGet] //Svi brodovi
         public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<BoatDTO>>(await _boatService.GetAllBoatsAsync()));
 
@@ -39,26 +40,28 @@ namespace BoatSea.Controllers
             var item = _mapper.Map<Boat>(boat);
             await _boatService.CreateBoat(item);
 
-            return Created("http://localhost:7000/api/Boats", _mapper.Map<Boat>(item));
+            return Created("http://localhost:7000/api/Boats", _mapper.Map<BoatDTO>(item));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] BoatDTO boat, [FromRoute] int id)
+        public async Task<IActionResult> Update([FromBody] BoatDTO request, [FromRoute] int id)
         {
-            var itemFromDatabase = await _boatService.GetByIdAsync(id);
+            var boat = await _boatService.GetByIdAsync(id);
 
-            if (itemFromDatabase == null)
+            if (boat == null)
             {
                 return NotFound();
             }
 
-            var item = _mapper.Map<BoatDTO, Boat>(boat, itemFromDatabase);
-            await _boatService.UpdateBoatAsync(item);
+            _mapper.Map(request, boat);
 
-            return Ok(_mapper.Map<BoatDTO>(item));
+            await _boatService.UpdateBoatAsync(boat);
+
+            return Ok(_mapper.Map<BoatDTO>(boat));
         }
 
         [HttpDelete("{id}")]
+
 
         public async Task<IActionResult> Delete([FromRoute] int id)
         {

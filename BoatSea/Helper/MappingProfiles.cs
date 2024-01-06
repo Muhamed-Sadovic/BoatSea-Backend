@@ -8,8 +8,8 @@ namespace BoatSea.Helper
     {
         public MappingProfiles()
         {
-            CreateMap<User,UserDTO>();
-            CreateMap<UserDTO,User>();
+            CreateMap<User,UserResponseDTO>();
+            CreateMap<UserResponseDTO,User>();
             CreateMap<RegisterUserRequestDTO, User>();
 
             CreateMap<Boat,BoatDTO>();
