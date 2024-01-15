@@ -75,22 +75,9 @@ namespace BoatSea.Services
                 return hash;
             }
         }
-
-        public async Task AddUserToRole(User user)
-        {
-            await _databaseContext.Users.AddAsync(user);
-            await _databaseContext.SaveChangesAsync();
-        }
-
         public async Task RegisterUser(User user)
         {
             await _databaseContext.Users.AddAsync(user);
-            await _databaseContext.SaveChangesAsync();
-        }
-
-        public async Task CreateRole(UserRole role)
-        {
-            await _databaseContext.Roles.AddAsync(role);
             await _databaseContext.SaveChangesAsync();
         }
 

@@ -1,9 +1,12 @@
-﻿namespace BoatSea.DTOs
+﻿using BoatSea.Models;
+
+namespace BoatSea.DTOs
 {
     public class UserResponseDTO
     {
         public int Id { get; set; }
-        public String Name { get; set; }
-        public String Email { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public UserRole Role { get; set; } = UserRole.User;
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoatSea.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231217184614_init")]
+    [Migration("20240115084454_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -115,28 +115,6 @@ namespace BoatSea.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BoatSea.Models.UserRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("BoatSea.Models.Rent", b =>
                 {
                     b.HasOne("BoatSea.Models.Boat", "Boat")
@@ -156,15 +134,6 @@ namespace BoatSea.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BoatSea.Models.UserRole", b =>
-                {
-                    b.HasOne("BoatSea.Models.User", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BoatSea.Models.Boat", b =>
                 {
                     b.Navigation("Rents");
@@ -173,8 +142,6 @@ namespace BoatSea.Migrations
             modelBuilder.Entity("BoatSea.Models.User", b =>
                 {
                     b.Navigation("Rents");
-
-                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

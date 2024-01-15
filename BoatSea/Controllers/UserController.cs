@@ -56,12 +56,6 @@ namespace BoatSea.Controllers
 
             await _userService.RegisterUser(user);
 
-            //await _userService.CreateRole(new UserRole
-            //{
-            //    Name = "User",
-            //    UserId = user.Id
-            //});
-
             var token = _userService.GenerateToken(user);
 
             return Ok(new AuthResponseDTO
