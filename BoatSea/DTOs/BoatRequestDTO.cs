@@ -1,18 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BoatSea.Models
+namespace BoatSea.DTOs
 {
-    public class Boat
+    public class BoatRequestDTO
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
         public float Price { get; set; }
-        public bool Available { get; set; } = true;
         [NotMapped]
-        public IFormFile Image { get; set; }    
+        public IFormFile Image { get; set; }
         public string ImageName { get; set; }
         public string Description { get; set; }
-        public ICollection<Rent> Rents { get; set; }
     }
 }

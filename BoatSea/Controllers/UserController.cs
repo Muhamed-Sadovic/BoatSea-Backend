@@ -4,7 +4,10 @@ using BoatSea.DTOs;
 using BoatSea.Interfaces;
 using BoatSea.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace BoatSea.Controllers
 {
@@ -14,20 +17,21 @@ namespace BoatSea.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        public UserController(IUserService userService, IMapper mapper)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public UserController(IUserService userService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _userService = userService;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
 
-        [HttpGet]
-        /*[Authorize]*/ //samo autorizovani mogu da koriste ovu f-ju
+        [HttpGet("getAllUsers")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<UserResponseDTO>>(await _userService.GetAllUsersAsync()));
 
 
-        [HttpDelete("{id}")]
-        [Authorize]
+        [HttpDelete("deleteUser/{id}")] //da se uradu authorize
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -41,18 +45,23 @@ namespace BoatSea.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequestDTO request)
+        public async Task<IActionResult> RegisterUser([FromForm] RegisterUserRequestDTO request)
         {
             var userExist = await _userService.GetUserByEmail(request.Email);
-
+            Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
             if (userExist is not null)
                 return BadRequest(new ErrorResponseDTO
                 {
                     Message = "User already exist"
                 });
-
             var user = _mapper.Map<User>(request);
             user.Password = _userService.HashPassword(request.Password);
+            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
+            {
+                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
+            }
+            request.Image.CopyTo(fileStream);
+            fileStream.Flush();
 
             await _userService.RegisterUser(user);
 

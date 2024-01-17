@@ -2,6 +2,8 @@
 using BoatSea.DTOs;
 using BoatSea.Interfaces;
 using BoatSea.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BoatSea.Controllers
@@ -12,17 +14,19 @@ namespace BoatSea.Controllers
     {
         private readonly IBoatService _boatService;
         private readonly IMapper _mapper;
-        public BoatController(IBoatService boatService, IMapper mapper)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public BoatController(IBoatService boatService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _boatService = boatService;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet] //Svi brodovi
-        public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<BoatDTO>>(await _boatService.GetAllBoatsAsync()));
+        [HttpGet("GetAllBoats")] //Svi brodovi
+        public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<BoatResponseDTO>>(await _boatService.GetAllBoatsAsync()));
 
 
-        [HttpGet("{id}")] //brod po id-u
+        [HttpGet("GetBoatById/{id}")] //brod po id-u
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var boat = await _boatService.GetByIdAsync(id);
@@ -31,20 +35,30 @@ namespace BoatSea.Controllers
                 Message = $"Boat with id={id} not found"
             });
 
-            return Ok(_mapper.Map<BoatDTO>(boat));
+            return Ok(_mapper.Map<BoatResponseDTO>(boat));
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] BoatDTO boat)
+        [HttpPost("CreateBoat")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromForm] BoatRequestDTO request)
         {
-            var item = _mapper.Map<Boat>(boat);
-            await _boatService.CreateBoat(item);
+            var boat = _mapper.Map<Boat>(request);
+            Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
+            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
+            {
+                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
+            }
+            request.Image.CopyTo(fileStream);
+            fileStream.Flush();
+            await _boatService.CreateBoat(boat);
 
-            return Created("http://localhost:7000/api/Boats", _mapper.Map<BoatDTO>(item));
+            return Ok(_mapper.Map<BoatResponseDTO>(boat));
+
+            //return Created("http://localhost:7087/api/Boat/createBoat", _mapper.Map<BoatRequestDTO>(boat));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] BoatDTO request, [FromRoute] int id)
+        public async Task<IActionResult> Update([FromBody] BoatRequestDTO request, [FromRoute] int id)
         {
             var boat = await _boatService.GetByIdAsync(id);
 
@@ -57,12 +71,11 @@ namespace BoatSea.Controllers
 
             await _boatService.UpdateBoatAsync(boat);
 
-            return Ok(_mapper.Map<BoatDTO>(boat));
+            return Ok(_mapper.Map<BoatResponseDTO>(boat));
         }
 
-        [HttpDelete("{id}")]
-
-
+        [HttpDelete("DeleteBoat/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var boat = await _boatService.GetByIdAsync(id);
@@ -80,7 +93,7 @@ namespace BoatSea.Controllers
 
         public async Task<IActionResult> AvailableBoats()
         {
-            return Ok(_mapper.Map<List<BoatDTO>>(await _boatService.GetByAvailable()));
+            return Ok(_mapper.Map<List<BoatRequestDTO>>(await _boatService.GetByAvailable()));
         }
 
         [HttpPost("/Tip/{type}")]
@@ -93,7 +106,7 @@ namespace BoatSea.Controllers
                 Message = $"Boats with type {type} not found"
             });
 
-            return Ok(_mapper.Map<List<BoatDTO>>(boats));
+            return Ok(_mapper.Map<List<BoatRequestDTO>>(boats));
         }
 
     }

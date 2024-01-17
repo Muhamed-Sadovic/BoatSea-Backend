@@ -24,6 +24,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
 	<PropertyGroup>
 		<_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
 	</PropertyGroup>
