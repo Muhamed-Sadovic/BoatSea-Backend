@@ -138,7 +138,6 @@ namespace BoatSea.Controllers
             }
             var resetToken = _userService.GenerateResetToken(user);
 
-            // Pošaljite email sa linkom za resetovanje lozinke
             await _userService.SendPasswordResetEmail(user.Email, resetToken);
 
             return Ok("Email za resetovanje lozinke je poslat.");

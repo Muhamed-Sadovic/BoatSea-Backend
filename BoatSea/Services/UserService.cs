@@ -163,16 +163,16 @@ namespace BoatSea.Services
 
         public async Task<User> GetUserByResetToken(string token)
         {
-            var decryptedToken = Decrypt(token); // Dekodiranje tokena
+            var decryptedToken = Decrypt(token);
             var parts = decryptedToken.Split('|');
             if (parts.Length != 2)
-                return null; // Neispravan token
+                return null;
 
-            var userId = int.Parse(parts[0]); // Izvlačenje korisničkog ID-a
-            var expirationTime = DateTime.Parse(parts[1]); // Izvlačenje vremena isteka
+            var userId = int.Parse(parts[0]);
+            var expirationTime = DateTime.Parse(parts[1]);
 
             if (expirationTime < DateTime.UtcNow)
-                return null; // Token je istekao
+                return null;
 
             return await _databaseContext.Users.FindAsync(userId);
         }

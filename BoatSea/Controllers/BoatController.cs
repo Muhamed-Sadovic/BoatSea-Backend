@@ -104,18 +104,13 @@ namespace BoatSea.Controllers
             return Ok(_mapper.Map<List<BoatRequestDTO>>(await _boatService.GetByAvailable()));
         }
 
-        [HttpPost("/Tip/{type}")]
-        public async Task<IActionResult> GetByType([FromRoute] string type)
-        {
-            var boats = await _boatService.GetByType(type);
+        //[HttpGet("GetBoatsByType/{type}")]
+        //public async Task<IActionResult> GetBoatByType([FromRoute] string type)
+        //{
+        //    var boats = await _boatService.GetByType(type);
 
-            if (boats.Count == 0) return NotFound(new ErrorResponseDTO
-            {
-                Message = $"Boats with type {type} not found"
-            });
-
-            return Ok(_mapper.Map<List<BoatRequestDTO>>(boats));
-        }
+        //    return Ok(_mapper.Map<List<BoatResponseDTO>>(boats));
+        //}
 
     }
 }
