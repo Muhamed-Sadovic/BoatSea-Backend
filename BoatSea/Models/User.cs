@@ -12,6 +12,10 @@ namespace BoatSea.Models
         [NotMapped]
         public IFormFile Image {  get; set; }
         public string ImageName { get; set; }
+        public string VerificationToken { get; set; }
+        public DateTime VerifiedAt { get; set; }
+        public string PasswordResetToken { get; set; }
+        public DateTime ResetTokenExpires { get; set; }
         public ICollection<Rent> Rents { get; set; }
 
 

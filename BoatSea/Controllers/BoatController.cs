@@ -57,8 +57,9 @@ namespace BoatSea.Controllers
             //return Created("http://localhost:7087/api/Boat/createBoat", _mapper.Map<BoatRequestDTO>(boat));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] BoatRequestDTO request, [FromRoute] int id)
+        [HttpPut("UpdateBoat/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update([FromForm] BoatRequestDTO request, [FromRoute] int id)
         {
             var boat = await _boatService.GetByIdAsync(id);
 
@@ -66,6 +67,13 @@ namespace BoatSea.Controllers
             {
                 return NotFound();
             }
+            Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
+            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
+            {
+                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
+            }
+            request.Image.CopyTo(fileStream);
+            fileStream.Flush();
 
             _mapper.Map(request, boat);
 
