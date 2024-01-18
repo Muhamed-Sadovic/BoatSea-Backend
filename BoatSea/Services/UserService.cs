@@ -4,7 +4,10 @@ using BoatSea.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace BoatSea.Services
@@ -84,6 +87,102 @@ namespace BoatSea.Services
         public async Task<User?> GetUserByEmail(string email)
         {
             return await _databaseContext.Users.Where(e =>  e.Email == email).FirstOrDefaultAsync();
+        }
+
+        public string CreateRandomToken()
+        {
+            var random = new Random();
+            return random.Next(1000, 9999).ToString();
+        }
+
+        public async Task SendEmailAsync(string to, string subject, string htmlContent)
+        {
+            var smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential("medmedorl121@gmail.com", "jdoc jlyu ovmc inxf"),
+                EnableSsl = true,
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress("medmedorl121@gmail.com"),
+                Subject = subject,
+                Body = htmlContent,
+                IsBodyHtml = true,
+            };
+            mailMessage.To.Add(to);
+
+            await smtpClient.SendMailAsync(mailMessage);
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            _databaseContext.Update(user);
+            await _databaseContext.SaveChangesAsync();
+        }
+
+        public string GenerateResetToken(User user)
+        {
+            var expirationTime = DateTime.UtcNow.AddHours(2); // Token važi 1 sat
+            var tokenData = $"{user.Id}|{expirationTime}";
+            var encryptedToken = Encrypt(tokenData); // Enkripcija
+            return encryptedToken;
+        }
+        private string Encrypt(string data)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
+        }
+        private string Decrypt(string encryptedData)
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(encryptedData));
+        }
+
+        public async Task SendPasswordResetEmail(string email, string resetToken)
+        {
+            var resetLink = $"http://localhost:3000/reset-password/{resetToken}";
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress("medmedorl121@gmail.com"),
+                Subject = "Resetovanje Lozinke",
+                Body = $"Molimo Vas da kliknete na sledeći link za resetovanje lozinke: {resetLink}",
+                IsBodyHtml = true,
+            };
+            mailMessage.To.Add(email);
+
+            using (var smtpClient = new SmtpClient())
+            {
+                smtpClient.Host = "smtp.gmail.com";
+                smtpClient.Port = 587;
+                smtpClient.Credentials = new NetworkCredential("medmedorl121@gmail.com", "jdoc jlyu ovmc inxf");
+                smtpClient.EnableSsl = true;
+
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+        }
+
+        public async Task<User> GetUserByResetToken(string token)
+        {
+            var decryptedToken = Decrypt(token); // Dekodiranje tokena
+            var parts = decryptedToken.Split('|');
+            if (parts.Length != 2)
+                return null; // Neispravan token
+
+            var userId = int.Parse(parts[0]); // Izvlačenje korisničkog ID-a
+            var expirationTime = DateTime.Parse(parts[1]); // Izvlačenje vremena isteka
+
+            if (expirationTime < DateTime.UtcNow)
+                return null; // Token je istekao
+
+            return await _databaseContext.Users.FindAsync(userId);
+        }
+
+        public async Task ResetPassword(User user, string newPassword)
+        {
+            user.Password = HashPassword(newPassword);
+
+            _databaseContext.Users.Update(user);
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }

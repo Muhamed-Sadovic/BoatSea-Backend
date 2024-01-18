@@ -49,6 +49,12 @@ namespace BoatSea.Controllers
         {
             var userExist = await _userService.GetUserByEmail(request.Email);
             Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
+            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
+            {
+                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
+            }
+            request.Image.CopyTo(fileStream);
+            fileStream.Flush();
             if (userExist is not null)
                 return BadRequest(new ErrorResponseDTO
                 {
@@ -56,14 +62,12 @@ namespace BoatSea.Controllers
                 });
             var user = _mapper.Map<User>(request);
             user.Password = _userService.HashPassword(request.Password);
-            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
-            {
-                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
-            }
-            request.Image.CopyTo(fileStream);
-            fileStream.Flush();
+
+            var verificationCode = _userService.CreateRandomToken();
+            user.VerificationCode = verificationCode;
 
             await _userService.RegisterUser(user);
+            await _userService.SendEmailAsync(request.Email, "Verifikacijski Kod", $"Vaš kod za verifikaciju je: {verificationCode}");
 
             var token = _userService.GenerateToken(user);
 
@@ -99,6 +103,59 @@ namespace BoatSea.Controllers
                 User = _mapper.Map<UserResponseDTO>(userExist)
             });
         }
+        [HttpPost("verifyAccount/{id}")]
+        public async Task<IActionResult> VerifyAccount([FromRoute] int id, [FromBody] VerificationRequest request)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
 
+            if (user.VerificationCode != request.Code)
+            {
+                return BadRequest("Invalid or expired verification code.");
+            }
+            var token = _userService.GenerateToken(user);
+
+            user.IsVerified = true;
+            await _userService.UpdateUserAsync(user);
+
+            return Ok(new AuthResponseDTO
+            {
+                Token = token,
+                User = _mapper.Map<UserResponseDTO>(user)
+            });
+        }
+
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var user = await _userService.GetUserByEmail(request.Email);
+            if (user == null)
+            {
+                return NotFound("Korisnik nije pronađen."); 
+            }
+            var resetToken = _userService.GenerateResetToken(user);
+
+            // Pošaljite email sa linkom za resetovanje lozinke
+            await _userService.SendPasswordResetEmail(user.Email, resetToken);
+
+            return Ok("Email za resetovanje lozinke je poslat.");
+        }
+
+        [HttpPost("resetPassword/{token}")]
+        public async Task<IActionResult> ResetPassword([FromRoute] string token, [FromBody] ResetPasswordRequest request)
+        {
+            var user = await _userService.GetUserByResetToken(token);
+            if (user == null)
+            {
+                return BadRequest("Neispravan ili istekao token za resetovanje lozinke.");
+            }
+
+            await _userService.ResetPassword(user, request.NewPassword);
+
+            return Ok("Lozinka je uspešno promenjena.");
+        }
     }
 }
