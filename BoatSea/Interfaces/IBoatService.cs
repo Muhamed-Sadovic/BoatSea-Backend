@@ -11,5 +11,6 @@ namespace BoatSea.Interfaces
         Task DeleteBoatAsync(Boat boat);
         Task<List<Boat>> GetByAvailable(); //da li su slobodni
         Task<List<Boat>> GetByType(string type);
+        Task UpdateAvailable(int id);
     }
 }

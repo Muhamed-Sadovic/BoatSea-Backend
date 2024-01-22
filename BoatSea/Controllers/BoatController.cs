@@ -5,6 +5,8 @@ using BoatSea.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
+using Stripe;
 
 namespace BoatSea.Controllers
 {
@@ -102,6 +104,49 @@ namespace BoatSea.Controllers
         public async Task<IActionResult> AvailableBoats()
         {
             return Ok(_mapper.Map<List<BoatRequestDTO>>(await _boatService.GetByAvailable()));
+        }
+
+        [HttpPost("create-checkout-session")]
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutRequest request)
+        {
+            StripeConfiguration.ApiKey = "sk_test_51ObHPNFPaUUOIdBrtFfurojg4ymmPY7kBL6PKg0pguNpI2NWUzhLjLg8YMUviXcCp9pUca1v9I01qXUUzxtzUpiE000DTdOq3w"; // Vaš Stripe Secret API Key
+
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = new List<SessionLineItemOptions>
+                {
+                    new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = request.Price * 100,
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "BoatSea",
+                                // Dodajte dodatne informacije ako je potrebno
+                            },
+                        },
+                        Quantity = 1,
+                    },
+                },
+                Mode = "payment",
+                SuccessUrl = request.SuccessUrl,
+                CancelUrl = request.CancelUrl,
+            };
+
+            var service = new SessionService();
+            Session session = await service.CreateAsync(options);
+
+            return Ok(new { sessionId = session.Id });
+        }
+
+        [HttpPut("updateAvailable/{id}")]
+        public async Task<IActionResult> UpdateAvailable([FromRoute] int id)
+        {
+            await _boatService.UpdateAvailable(id);
+            return Ok();
         }
 
         //[HttpGet("GetBoatsByType/{type}")]

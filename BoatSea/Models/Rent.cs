@@ -12,6 +12,6 @@ namespace BoatSea.Models
         [ForeignKey("BoatId")]
         public Boat Boat { get; set; }
         public DateTime DatumIznajmljivanja { get; set; }
-        public int TrajanjeUDanima { get; set; }
+        public DateTime DatumKrajaIznajmljivanja { get; set; }
     }
 }

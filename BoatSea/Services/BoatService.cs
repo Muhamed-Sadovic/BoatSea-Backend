@@ -46,5 +46,19 @@ namespace BoatSea.Services
             _databaseContext.Update(boat);
             await _databaseContext.SaveChangesAsync();
         }
+
+        public async Task UpdateAvailable(int id)
+        {
+            var boat = await _databaseContext.Boats.FirstOrDefaultAsync(b => b.Id == id);
+
+            if (boat == null)
+            {
+                throw new InvalidOperationException("Boat not found.");
+            }
+
+            boat.Available = false;
+            _databaseContext.Boats.Update(boat);
+            await _databaseContext.SaveChangesAsync();
+        }
     }
 }

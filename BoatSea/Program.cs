@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IBoatService,BoatService>();
+builder.Services.AddScoped<IRentService, RentService>();
 
 
 builder.Services.AddDbContext<DatabaseContext>(option =>

@@ -15,4 +15,10 @@ namespace BoatSea.Models
         public string Description { get; set; }
         public ICollection<Rent> Rents { get; set; }
     }
+    public class CheckoutRequest
+    {
+        public int Price { get; set; }
+        public string SuccessUrl { get; set; }
+        public string CancelUrl { get; set; }
+    }
 }
