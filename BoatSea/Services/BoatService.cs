@@ -51,11 +51,6 @@ namespace BoatSea.Services
         {
             var boat = await _databaseContext.Boats.FirstOrDefaultAsync(b => b.Id == id);
 
-            if (boat == null)
-            {
-                throw new InvalidOperationException("Boat not found.");
-            }
-
             boat.Available = false;
             _databaseContext.Boats.Update(boat);
             await _databaseContext.SaveChangesAsync();

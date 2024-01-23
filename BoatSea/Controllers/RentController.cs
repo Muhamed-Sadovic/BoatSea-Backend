@@ -30,5 +30,28 @@ namespace BoatSea.Controllers
             return Ok(_mapper.Map<RentResponseDTO>(rent));
         }
 
+        [HttpGet("GetRentsByUser/{id}")]
+
+        public async Task<IActionResult> GetRentsByUser([FromRoute] int id)
+        {
+            var rents = await _rentService.GetAllRentsByUser(id);
+            return Ok(rents);
+        }
+
+        [HttpDelete("CancelRent/{id}")]
+        public async Task<IActionResult> CancelRent([FromRoute] int id)
+        {
+            try
+            {
+                await _rentService.CancelRent(id);
+                return Ok("Rent successfully cancelled.");
+            }
+            catch (Exception ex)
+            {
+                // Logujte ex za dalju analizu
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }

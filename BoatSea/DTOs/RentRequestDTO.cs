@@ -1,7 +1,4 @@
-﻿using BoatSea.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace BoatSea.DTOs
+﻿namespace BoatSea.DTOs
 {
     public class RentRequestDTO
     {
