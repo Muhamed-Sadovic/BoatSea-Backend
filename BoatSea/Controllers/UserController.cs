@@ -3,6 +3,7 @@ using BoatSea.Data;
 using BoatSea.DTOs;
 using BoatSea.Interfaces;
 using BoatSea.Models;
+using BoatSea.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
@@ -25,11 +26,36 @@ namespace BoatSea.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-
         [HttpGet("getAllUsers")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll() => Ok(_mapper.Map<List<UserResponseDTO>>(await _userService.GetAllUsersAsync()));
 
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id) => Ok(_mapper.Map<UserResponseDTO>(await _userService.GetByIdAsync(id)));
+
+        [HttpPut("UpdateUser/{id}")]
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserDTO request, [FromRoute] int id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
+            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
+            {
+                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Images");
+            }
+            request.Image.CopyTo(fileStream);
+            fileStream.Flush();
+
+            _mapper.Map(request, user);
+
+            await _userService.UpdateUserAsync(user);
+
+            return Ok(_mapper.Map<UserResponseDTO>(user));
+        }
 
         [HttpDelete("deleteUser/{id}")] //da se uradu authorize
         public async Task<IActionResult> Delete([FromRoute] int id)
@@ -48,6 +74,12 @@ namespace BoatSea.Controllers
         public async Task<IActionResult> RegisterUser([FromForm] RegisterUserRequestDTO request)
         {
             var userExist = await _userService.GetUserByEmail(request.Email);
+            if (userExist is not null)
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = "User already exist"
+                });
+
             Stream fileStream = new FileStream(_webHostEnvironment.WebRootPath + "\\Images\\" + request.ImageName, FileMode.Create);
             if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Images"))
             {
@@ -55,11 +87,6 @@ namespace BoatSea.Controllers
             }
             request.Image.CopyTo(fileStream);
             fileStream.Flush();
-            if (userExist is not null)
-                return BadRequest(new ErrorResponseDTO
-                {
-                    Message = "User already exist"
-                });
             var user = _mapper.Map<User>(request);
             user.Password = _userService.HashPassword(request.Password);
 
@@ -67,7 +94,7 @@ namespace BoatSea.Controllers
             user.VerificationCode = verificationCode;
 
             await _userService.RegisterUser(user);
-            await _userService.SendEmailAsync(request.Email, "Verifikacijski Kod", $"Vaš kod za verifikaciju je: {verificationCode}");
+            await _userService.SendEmailAsync(request.Email, "Verification Code", $"Your verification code is: {verificationCode}");
 
             var token = _userService.GenerateToken(user);
 
