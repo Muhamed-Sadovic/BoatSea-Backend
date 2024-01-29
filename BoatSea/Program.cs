@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+//"Server=DESKTOP-LG671OJ;Database=BoatSea-Backend;Trusted_Connection=True",
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IUserService,UserService>();
@@ -75,3 +75,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

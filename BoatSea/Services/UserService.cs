@@ -14,7 +14,7 @@ namespace BoatSea.Services
 {
     public class UserService : IUserService
     {
-        public DatabaseContext _databaseContext { get; set; }
+        private readonly DatabaseContext _databaseContext;
         private readonly IConfiguration _configuration;
         public UserService(DatabaseContext databaseContext, IConfiguration configuration)
         {

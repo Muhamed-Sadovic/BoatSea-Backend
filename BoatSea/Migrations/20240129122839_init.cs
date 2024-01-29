@@ -19,8 +19,8 @@ namespace BoatSea.Migrations
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<float>(type: "real", nullable: false),
                     Available = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,7 +37,9 @@ namespace BoatSea.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerificationCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +55,7 @@ namespace BoatSea.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     BoatId = table.Column<int>(type: "int", nullable: false),
                     DatumIznajmljivanja = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TrajanjeUDanima = table.Column<int>(type: "int", nullable: false)
+                    DatumKrajaIznajmljivanja = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

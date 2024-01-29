@@ -8,5 +8,6 @@
         public DateTime EndDate { get; set; }
         public string ImageName { get; set; }
         public string Type { get; set; }
+        public int BoatId { get; internal set; }
     }
 }

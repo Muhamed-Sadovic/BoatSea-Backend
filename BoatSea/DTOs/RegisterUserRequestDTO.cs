@@ -10,5 +10,6 @@ namespace BoatSea.DTOs
         [NotMapped]
         public IFormFile Image {  get; set; }
         public string ImageName { get; set; }
+        public string Role { get; set; }
     }
 }

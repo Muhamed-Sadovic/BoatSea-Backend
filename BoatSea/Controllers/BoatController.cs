@@ -109,7 +109,7 @@ namespace BoatSea.Controllers
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutRequest request)
         {
-            StripeConfiguration.ApiKey = "sk_test_51ObHPNFPaUUOIdBrtFfurojg4ymmPY7kBL6PKg0pguNpI2NWUzhLjLg8YMUviXcCp9pUca1v9I01qXUUzxtzUpiE000DTdOq3w"; // Vaš Stripe Secret API Key
+            StripeConfiguration.ApiKey = "sk_test_51ObHPNFPaUUOIdBrtFfurojg4ymmPY7kBL6PKg0pguNpI2NWUzhLjLg8YMUviXcCp9pUca1v9I01qXUUzxtzUpiE000DTdOq3w";
 
             var options = new SessionCreateOptions
             {
@@ -125,7 +125,6 @@ namespace BoatSea.Controllers
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = "BoatSea",
-                                // Dodajte dodatne informacije ako je potrebno
                             },
                         },
                         Quantity = 1,
@@ -149,6 +148,12 @@ namespace BoatSea.Controllers
             return Ok();
         }
 
+        [HttpPut("updateAvailableTrue/{id}")]
+        public async Task<IActionResult> UpdateAvailableTrue([FromRoute] int id)
+        {
+            await _boatService.UpdateAvailableTrue(id);
+            return Ok();
+        }
         //[HttpGet("GetBoatsByType/{type}")]
         //public async Task<IActionResult> GetBoatByType([FromRoute] string type)
         //{

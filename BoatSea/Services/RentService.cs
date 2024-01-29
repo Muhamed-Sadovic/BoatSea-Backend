@@ -43,6 +43,7 @@ namespace BoatSea.Services
               (rent, boat) => new RentDetailsDTO
               {
                   Id = rent.Id,
+                  BoatId = boat.Id,
                   Name = boat.Name,
                   StartDate = rent.DatumIznajmljivanja,
                   EndDate = rent.DatumKrajaIznajmljivanja,

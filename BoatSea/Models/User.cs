@@ -13,7 +13,7 @@ namespace BoatSea.Models
         public IFormFile Image {  get; set; }
         public string ImageName { get; set; }
         public string VerificationCode { get; set; }
-        public bool IsVerified { get; set; } = false;
+        public bool IsVerified { get; set; }
         public ICollection<Rent> Rents { get; set; }
 
     }

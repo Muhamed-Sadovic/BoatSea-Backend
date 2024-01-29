@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoatSea.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240117104040_init2")]
-    partial class init2
+    [Migration("20240129122839_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -74,8 +74,8 @@ namespace BoatSea.Migrations
                     b.Property<DateTime>("DatumIznajmljivanja")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TrajanjeUDanima")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DatumKrajaIznajmljivanja")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("UserId")
                         .IsRequired()
@@ -106,6 +106,9 @@ namespace BoatSea.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -115,6 +118,10 @@ namespace BoatSea.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VerificationCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

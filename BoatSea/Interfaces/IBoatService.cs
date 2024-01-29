@@ -12,5 +12,6 @@ namespace BoatSea.Interfaces
         Task<List<Boat>> GetByAvailable(); //da li su slobodni
         Task<List<Boat>> GetByType(string type);
         Task UpdateAvailable(int id);
+        Task UpdateAvailableTrue(int id);
     }
 }

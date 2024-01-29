@@ -93,6 +93,11 @@ namespace BoatSea.Controllers
             var verificationCode = _userService.CreateRandomToken();
             user.VerificationCode = verificationCode;
 
+            if (request.Role == "Admin")
+            {
+                user.IsVerified = true;
+            }
+
             await _userService.RegisterUser(user);
             await _userService.SendEmailAsync(request.Email, "Verification Code", $"Your verification code is: {verificationCode}");
 
