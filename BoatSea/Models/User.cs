@@ -14,6 +14,8 @@ namespace BoatSea.Models
         public string ImageName { get; set; }
         public string VerificationCode { get; set; }
         public bool IsVerified { get; set; }
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
         public ICollection<Rent> Rents { get; set; }
 
     }
@@ -28,5 +30,6 @@ namespace BoatSea.Models
     public class ResetPasswordRequest
     {
         public string NewPassword { get; set; }
+        public string Token { get; set; }
     }
 }

@@ -18,5 +18,7 @@ namespace BoatSea.Interfaces
         Task SendPasswordResetEmail(string email, string resetToken);
         Task<User> GetUserByResetToken(string token);
         Task ResetPassword(User user, string newPassword);
+
+        Task<List<Drzava>> GetGrad(string drzava);
     }
 }

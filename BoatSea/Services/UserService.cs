@@ -37,6 +37,8 @@ namespace BoatSea.Services
             return await _databaseContext.Users.Where(p => p.Id == id).FirstOrDefaultAsync();
         }
 
+
+
         public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -124,28 +126,26 @@ namespace BoatSea.Services
 
         public string GenerateResetToken(User user)
         {
-            var expirationTime = DateTime.UtcNow.AddHours(2); // Token važi 1 sat
-            var tokenData = $"{user.Id}|{expirationTime}";
-            var encryptedToken = Encrypt(tokenData); // Enkripcija
-            return encryptedToken;
-        }
-        private string Encrypt(string data)
-        {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
-        }
-        private string Decrypt(string encryptedData)
-        {
-            return Encoding.UTF8.GetString(Convert.FromBase64String(encryptedData));
+            var resetToken = Guid.NewGuid().ToString();
+            user.ResetToken = resetToken;
+            user.ResetTokenExpiry = DateTime.UtcNow.AddHours(2);
+
+            _databaseContext.Users.Update(user);
+            _databaseContext.SaveChanges();
+
+            return resetToken;
         }
 
         public async Task SendPasswordResetEmail(string email, string resetToken)
         {
-            var resetLink = $"http://localhost:3000/reset-password/{resetToken}";
             var mailMessage = new MailMessage
             {
                 From = new MailAddress("medmedorl121@gmail.com"),
-                Subject = "Resetovanje Lozinke",
-                Body = $"Molimo Vas da kliknete na sledeći link za resetovanje lozinke: {resetLink}",
+                Subject = "Password Reset",
+                Body = $"<p>Hello,</p>" +
+                        $"<p>You have requested to reset your password." +
+                        $"<p>To continue, go to the password reset page in the app.</p>" +
+                        $"<br><p>Best regards,<br>BoatSea Team</p>",
                 IsBodyHtml = true,
             };
             mailMessage.To.Add(email);
@@ -163,26 +163,29 @@ namespace BoatSea.Services
 
         public async Task<User> GetUserByResetToken(string token)
         {
-            var decryptedToken = Decrypt(token);
-            var parts = decryptedToken.Split('|');
-            if (parts.Length != 2)
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(u => u.ResetToken == token);
+
+            if (user == null || user.ResetTokenExpiry < DateTime.UtcNow)
                 return null;
 
-            var userId = int.Parse(parts[0]);
-            var expirationTime = DateTime.Parse(parts[1]);
-
-            if (expirationTime < DateTime.UtcNow)
-                return null;
-
-            return await _databaseContext.Users.FindAsync(userId);
+            return user;
         }
 
         public async Task ResetPassword(User user, string newPassword)
         {
             user.Password = HashPassword(newPassword);
 
+            // Brišemo token nakon korišćenja
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+
             _databaseContext.Users.Update(user);
             await _databaseContext.SaveChangesAsync();
+        }
+
+        public async Task<List<Drzava>> GetGrad(string drzava)
+        {
+            return await _databaseContext.Drzava.Where(d => d.Country == drzava).ToListAsync();
         }
     }
 }

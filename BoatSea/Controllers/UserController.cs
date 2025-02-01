@@ -158,7 +158,7 @@ namespace BoatSea.Controllers
                 Token = token,
                 User = _mapper.Map<UserResponseDTO>(user)
             });
-        }
+        }   
 
         [HttpPost("forgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
@@ -166,27 +166,35 @@ namespace BoatSea.Controllers
             var user = await _userService.GetUserByEmail(request.Email);
             if (user == null)
             {
-                return NotFound("Korisnik nije pronađen."); 
+                return NotFound(new { message = "User not found" });
             }
             var resetToken = _userService.GenerateResetToken(user);
 
             await _userService.SendPasswordResetEmail(user.Email, resetToken);
 
-            return Ok("Email za resetovanje lozinke je poslat.");
+            return Ok(new { resetToken });
         }
 
-        [HttpPost("resetPassword/{token}")]
-        public async Task<IActionResult> ResetPassword([FromRoute] string token, [FromBody] ResetPasswordRequest request)
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            var user = await _userService.GetUserByResetToken(token);
+            var user = await _userService.GetUserByResetToken(request.Token);
             if (user == null)
             {
-                return BadRequest("Neispravan ili istekao token za resetovanje lozinke.");
+                return BadRequest("Invalid or expired password reset token.");
             }
 
             await _userService.ResetPassword(user, request.NewPassword);
 
-            return Ok("Lozinka je uspešno promenjena.");
+            return Ok("Password successfully changed");
+        }
+
+        [HttpPost("getGrad")]
+
+        public async Task<IActionResult> GetGrad([FromForm] string drzava)
+        {
+            var gr = await _userService.GetGrad(drzava);
+            return Ok(gr);
         }
     }
 }
