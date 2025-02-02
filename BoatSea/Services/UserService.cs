@@ -37,8 +37,6 @@ namespace BoatSea.Services
             return await _databaseContext.Users.Where(p => p.Id == id).FirstOrDefaultAsync();
         }
 
-
-
         public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -141,7 +139,7 @@ namespace BoatSea.Services
             var mailMessage = new MailMessage
             {
                 From = new MailAddress("medmedorl121@gmail.com"),
-                Subject = "Password Reset",
+                Subject = "Reset Password",
                 Body = $"<p>Hello,</p>" +
                         $"<p>You have requested to reset your password." +
                         $"<p>To continue, go to the password reset page in the app.</p>" +
@@ -174,8 +172,6 @@ namespace BoatSea.Services
         public async Task ResetPassword(User user, string newPassword)
         {
             user.Password = HashPassword(newPassword);
-
-            // Brišemo token nakon korišćenja
             user.ResetToken = null;
             user.ResetTokenExpiry = null;
 

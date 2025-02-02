@@ -48,7 +48,6 @@ namespace BoatSea.Controllers
             }
             catch (Exception ex)
             {
-                // Logujte ex za dalju analizu
                 return StatusCode(500, "Internal Server Error");
             }
         }

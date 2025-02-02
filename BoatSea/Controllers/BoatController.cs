@@ -55,8 +55,6 @@ namespace BoatSea.Controllers
             await _boatService.CreateBoat(boat);
 
             return Ok(_mapper.Map<BoatResponseDTO>(boat));
-
-            //return Created("http://localhost:7087/api/Boat/createBoat", _mapper.Map<BoatRequestDTO>(boat));
         }
 
         [HttpPut("UpdateBoat/{id}")]
@@ -125,6 +123,7 @@ namespace BoatSea.Controllers
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = "BoatSea",
+                                Description = "Secure boat rental with BoatSea",
                             },
                         },
                         Quantity = 1,

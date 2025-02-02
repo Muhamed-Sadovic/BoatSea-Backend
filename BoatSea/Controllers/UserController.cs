@@ -57,7 +57,7 @@ namespace BoatSea.Controllers
             return Ok(_mapper.Map<UserResponseDTO>(user));
         }
 
-        [HttpDelete("deleteUser/{id}")] //da se uradu authorize
+        [HttpDelete("deleteUser/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var user = await _userService.GetByIdAsync(id);

@@ -17,7 +17,7 @@ namespace BoatSea.Models
     }
     public class CheckoutRequest
     {
-        public int Price { get; set; }
+        public long Price { get; set; }
         public string SuccessUrl { get; set; }
         public string CancelUrl { get; set; }
     }
